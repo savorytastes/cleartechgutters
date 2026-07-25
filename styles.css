@@ -97,7 +97,7 @@ button { cursor: pointer; }
 .visual-stats strong { color: #dcebed; font-size: .73rem; line-height: 1.2; white-space: nowrap; }
 
 .trust-strip { background: #092132; color: white; border-top: 1px solid rgba(255,255,255,.06); }
-.trust-grid { display: grid; grid-template-columns: repeat(3,1fr); }
+.trust-grid { display: grid; grid-template-columns: repeat(4,1fr); }
 .trust-grid > div { padding: 27px 32px; border-left: 1px solid rgba(255,255,255,.08); }
 .trust-grid > div:first-child { border-left: 0; }
 .trust-grid strong, .trust-grid span { display: block; }

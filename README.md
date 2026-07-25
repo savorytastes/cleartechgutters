@@ -1,60 +1,42 @@
 # ClearTech Gutters website
 
-A responsive, single-page lead-generation site built for GitHub Pages.
+Static GitHub Pages site for **cleartechgutters.com**.
 
-## Files
+## Publish the revised site
 
-- `index.html` — page content and SEO metadata
-- `styles.css` — complete responsive design
-- `script.js` — menu, FAQ, animations, photo previews, and form submission
-- `404.html` — custom not-found page
-- `CNAME` — preserves `cleartechgutters.com` on GitHub Pages
-- `robots.txt` and `sitemap.xml` — basic search-engine setup
-- `assets/` — favicon and social sharing card
+1. Open the `savorytastes/cleartechgutters` repository on GitHub.
+2. Delete the old website files from the repository root, but keep the repository itself.
+3. Upload the contents of this folder—not the enclosing folder.
+4. Commit the upload to the `main` branch.
+5. Open **Actions** or **Settings → Pages** and wait for the deployment to finish.
+6. Refresh `https://cleartechgutters.com/` with Ctrl+F5.
 
-## Connect the quote form
+The root should contain `index.html`, `styles.css`, `script.js`, `CNAME`, `.nojekyll`, and the `assets` folder.
 
-The form is already designed and coded. It needs a Formspree form ID before it can send submissions.
+## Important: connect the quote form
 
-1. Create a Formspree account and a new form.
-2. Copy the endpoint, which looks like:
-   `https://formspree.io/f/abcdwxyz`
-3. Open `index.html`.
-4. Find:
-   `https://formspree.io/f/REPLACE_WITH_FORM_ID`
-5. Replace it with your real endpoint.
+The site currently contains a placeholder Formspree action:
 
-The form is configured as `multipart/form-data` so image uploads can be submitted when the Formspree plan supports file uploads.
-
-## Add Google Analytics
-
-Paste the Google tag immediately before `</head>` in `index.html`. Use the measurement ID for the ClearTech Gutters property, not the Savory Tastes property.
-
-## Publish to the existing GitHub Pages repository
-
-1. Back up the current repository.
-2. Upload all files from this folder to the repository root.
-3. Commit the changes.
-4. In GitHub: **Settings → Pages**.
-5. Confirm deployment is from the correct branch and root folder.
-6. Keep the included `CNAME` file.
-
-## Recommended content replacements
-
-Before advertising the site:
-
-- Add the exact service ZIP codes or communities.
-- Add a business phone number, if desired.
-- Replace the illustrated before/after section with authentic job photos after the first few jobs.
-- Confirm what the standard and complex services include.
-- Add insurance or licensing language only if it is accurate and documented.
-
-## Local preview
-
-From this directory, run:
-
-```bash
-python -m http.server 8000
+```html
+action="https://formspree.io/f/REPLACE_WITH_FORM_ID"
 ```
 
-Then visit `http://localhost:8000`.
+Create or open the Formspree form that should receive quote requests. Replace `REPLACE_WITH_FORM_ID` in `index.html` with the actual Formspree form ID before publishing.
+
+Example:
+
+```html
+action="https://formspree.io/f/abcdwxyz"
+```
+
+Then submit a test request from the live website and confirm that it arrives at `info@cleartechgutters.com`.
+
+## Pricing and quote flow
+
+- Fixed prices: **$99, $129, and $149**
+- Every tier includes the same complete cleaning standard.
+- ClearTech takes and provides free before-and-after photos of the gutters.
+- If there is no gutter debris to remove, there is no cleaning fee.
+- Gutter cleaning is ClearTech’s sole priority.
+- Customers provide their address and contact information.
+- ClearTech reviews the property online and confirms the applicable guaranteed price before booking.

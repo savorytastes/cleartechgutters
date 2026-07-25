@@ -1,0 +1,23 @@
+CLEARTECH GUTTERS — HOW TO PUBLISH THIS UPDATE
+
+1. Log in to GitHub and open: savorytastes/cleartechgutters
+2. In the repository, remove the old website files from the main branch.
+3. Click Add file > Upload files.
+4. Open this revised folder on your computer.
+5. Select ALL files and the assets folder inside it, then drag them into GitHub.
+   Do not upload the enclosing folder itself. index.html must appear at the repository root.
+6. Enter this commit message:
+   Restore service guarantees and fixed pricing
+7. Click Commit changes.
+8. Wait for GitHub Pages to deploy, then open cleartechgutters.com and press Ctrl+F5.
+
+IMPORTANT BEFORE GOING LIVE
+The quote form still needs a real Formspree ID. In index.html, find:
+https://formspree.io/f/REPLACE_WITH_FORM_ID
+Replace REPLACE_WITH_FORM_ID with your actual Formspree form ID.
+Then send yourself a test quote from the live site.
+
+SERVICE PROMISES INCLUDED IN THIS VERSION
+- Free before-and-after photos taken by ClearTech
+- No debris, no fee
+- Gutter cleaning is our sole priority

@@ -1,0 +1,24 @@
+CLEARTECH GUTTERS WEBSITE CHANGES
+
+- Replaced “Less complication” with “Better protection for your home.”
+- Reframed the homepage around homeowner benefits.
+- Removed requests for customers to take or upload property photos; quotes now begin with the address.
+- Changed the quote process to begin with the property address.
+- Added three fixed prices: $99, $129, and $149.
+- Removed all “from” and “starting price” language.
+- Clarified that every price receives the same complete cleaning standard.
+- Named tiers by home size/layout rather than cleaning quality:
+  Smaller home, Typical home, and Larger home.
+- Simplified the quote form by removing home-height and service-selection questions.
+- Restored and emphasized free before-and-after gutter photos taken by ClearTech.
+- Added the “No debris, no fee” promise.
+- Made clear that gutter cleaning is ClearTech’s sole priority.
+- Updated the process, service-area, FAQ, metadata, and footer copy.
+- Removed duplicate nested website folders and the unused duplicate stylesheet.
+- Added publishing instructions and a reminder to connect the Formspree endpoint.
+
+ADDED HOME-PROTECTION MESSAGE
+- States that the service does not involve walking on the roof.
+- States that ladders are not placed against gutters.
+- States that high-pressure water is not used.
+- Explains that the ground-based vacuum method avoids unnecessary contact and force.

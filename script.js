@@ -17,12 +17,6 @@
     });
   }
 
-  document.querySelectorAll('[data-service]').forEach((link) => {
-    link.addEventListener('click', () => {
-      const select = document.querySelector('#service-interest');
-      if (select) select.value = link.dataset.service || '';
-    });
-  });
 
   document.querySelectorAll('.faq-item button').forEach((button) => {
     button.addEventListener('click', () => {
@@ -47,42 +41,6 @@
   } else {
     revealItems.forEach((item) => item.classList.add('visible'));
   }
-
-  const photoInput = document.querySelector('#photos');
-  const preview = document.querySelector('#file-preview');
-  const uploadBox = document.querySelector('#upload-box');
-
-  const renderFiles = (files) => {
-    if (!preview) return;
-    preview.innerHTML = '';
-    [...files].slice(0, 8).forEach((file) => {
-      const chip = document.createElement('div');
-      chip.className = 'preview-chip';
-      const img = document.createElement('img');
-      img.alt = '';
-      img.src = URL.createObjectURL(file);
-      img.onload = () => URL.revokeObjectURL(img.src);
-      const name = document.createElement('span');
-      name.textContent = file.name;
-      chip.append(img, name);
-      preview.appendChild(chip);
-    });
-  };
-
-  photoInput?.addEventListener('change', () => renderFiles(photoInput.files));
-
-  ['dragenter', 'dragover'].forEach((eventName) => {
-    uploadBox?.addEventListener(eventName, (event) => {
-      event.preventDefault();
-      uploadBox.classList.add('dragging');
-    });
-  });
-  ['dragleave', 'drop'].forEach((eventName) => {
-    uploadBox?.addEventListener(eventName, (event) => {
-      event.preventDefault();
-      uploadBox.classList.remove('dragging');
-    });
-  });
 
   const form = document.querySelector('#quote-form');
   const status = document.querySelector('#form-status');
@@ -136,7 +94,6 @@
       if (!response.ok) throw new Error('Submission failed');
 
       form.reset();
-      if (preview) preview.innerHTML = '';
       showStatus('Thank you. Your quote request was sent successfully.', 'success');
     } catch (error) {
       showStatus('The request could not be sent. Please try again or email info@cleartechgutters.com.', 'error');
