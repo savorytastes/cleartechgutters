@@ -1,0 +1,15 @@
+CLEARTECH GUTTERS WEBSITE CHANGES
+
+- Replaced “Less complication” with “Better protection for your home.”
+- Reframed the homepage around homeowner benefits.
+- Removed all customer photo requests, upload fields, and photo-preview JavaScript.
+- Changed the quote process to begin with the property address.
+- Added three fixed prices: $99, $129, and $149.
+- Removed all “from” and “starting price” language.
+- Clarified that every price receives the same complete cleaning standard.
+- Named tiers by home size/layout rather than cleaning quality:
+  Smaller home, Typical home, and Larger home.
+- Simplified the quote form by removing home-height and service-selection questions.
+- Updated the process, service-area, FAQ, metadata, and footer copy.
+- Removed duplicate nested website folders and the unused duplicate stylesheet.
+- Added publishing instructions and a reminder to connect the Formspree endpoint.
