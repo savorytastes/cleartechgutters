@@ -35,5 +35,8 @@ Then submit a test request from the live website and confirm that it arrives at 
 
 - Fixed prices: **$99, $129, and $149**
 - Every tier includes the same complete cleaning standard.
+- ClearTech takes and provides free before-and-after photos of the gutters.
+- If there is no gutter debris to remove, there is no cleaning fee.
+- Gutter cleaning is ClearTech’s sole priority.
 - Customers provide their address and contact information.
 - ClearTech reviews the property online and confirms the applicable guaranteed price before booking.
