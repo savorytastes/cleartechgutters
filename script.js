@@ -111,8 +111,6 @@
     exploreColumn.appendChild(areaLink);
   }
 
-  // SMS links open the phone's messaging app on mobile. On desktop, copy the
-  // number instead of silently doing nothing when no SMS handler is installed.
   const textCapableDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
@@ -176,24 +174,41 @@
   const form = document.querySelector('#quote-form');
   const status = document.querySelector('#form-status');
 
+  const showStatus = (message, type) => {
+    if (!status) return;
+    status.textContent = message;
+    status.className = `form-status show ${type}`;
+  };
+
   if (form) {
     form.querySelector('[name="home_height"]')?.closest('label')?.remove();
     form.querySelector('#upload-box')?.remove();
     form.querySelector('#file-preview')?.remove();
     form.querySelector('[name="photos"]')?.remove();
 
-    form.action = 'https://formsubmit.co/ajax/info@cleartechgutters.com';
+    // Use a normal browser POST rather than AJAX. This is more reliable and
+    // allows FormSubmit's one-time email activation flow to work visibly.
+    form.action = 'https://formsubmit.co/info@cleartechgutters.com';
     form.method = 'POST';
-    form.enctype = 'application/x-www-form-urlencoded';
+    form.removeAttribute('novalidate');
 
-    let template = form.querySelector('input[name="_template"]');
-    if (!template) {
-      template = document.createElement('input');
-      template.type = 'hidden';
-      template.name = '_template';
-      template.value = 'table';
-      form.prepend(template);
-    }
+    const hiddenFields = {
+      _template: 'table',
+      _subject: 'New ClearTech Gutters quote request',
+      _captcha: 'false',
+      _next: 'https://cleartechgutters.com/?quote=sent#quote'
+    };
+
+    Object.entries(hiddenFields).forEach(([name, value]) => {
+      let input = form.querySelector(`input[name="${name}"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        form.prepend(input);
+      }
+      input.value = value;
+    });
 
     form.querySelector('[name="service_interest"]')?.closest('label')?.remove();
     form.querySelector('input[name="service_interest"]')?.remove();
@@ -220,65 +235,24 @@
     categoryLabel.appendChild(category);
     if (detailsLabel) form.insertBefore(categoryLabel, detailsLabel);
     else form.appendChild(categoryLabel);
+
+    form.addEventListener('submit', (event) => {
+      if (form.company_website?.value) {
+        event.preventDefault();
+        return;
+      }
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        form.reportValidity();
+        showStatus('Please complete the required fields before sending your request.', 'error');
+      }
+    });
   }
 
-  const showStatus = (message, type) => {
-    if (!status) return;
-    status.textContent = message;
-    status.className = `form-status show ${type}`;
-  };
-
-  form?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    status?.classList.remove('show', 'error', 'success');
-
-    const required = form.querySelectorAll('[required]');
-    let valid = true;
-    required.forEach((field) => {
-      const fieldValid = field.checkValidity();
-      field.classList.toggle('invalid', !fieldValid);
-      if (!fieldValid) valid = false;
-    });
-
-    if (!valid) {
-      showStatus('Please complete the required fields before sending your request.', 'error');
-      form.querySelector('.invalid')?.focus();
-      return;
-    }
-
-    if (form.company_website?.value) return;
-
-    const button = form.querySelector('button[type="submit"]');
-    const originalLabel = button?.innerHTML;
-    if (button) {
-      button.disabled = true;
-      button.textContent = 'Sending…';
-    }
-
-    try {
-      const response = await fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { Accept: 'application/json' }
-      });
-
-      if (!response.ok) throw new Error('Submission failed');
-      form.reset();
-      showStatus('Thank you. Your quote request was sent successfully.', 'success');
-    } catch (error) {
-      showStatus(`The request could not be sent. Please call or text ${PHONE_DISPLAY}, or email info@cleartechgutters.com.`, 'error');
-    } finally {
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = originalLabel;
-      }
-    }
-  });
-
-  form?.querySelectorAll('input, select, textarea').forEach((field) => {
-    field.addEventListener('input', () => field.classList.remove('invalid'));
-    field.addEventListener('change', () => field.classList.remove('invalid'));
-  });
+  if (new URLSearchParams(location.search).get('quote') === 'sent') {
+    showStatus('Thank you. Your quote request was sent successfully.', 'success');
+    history.replaceState({}, '', `${location.pathname}#quote`);
+  }
 
   const year = document.querySelector('#year');
   if (year) year.textContent = String(new Date().getFullYear());
