@@ -1,4 +1,7 @@
 (() => {
+  const PHONE_DISPLAY = '412-228-0405';
+  const PHONE_TEL = '+14122280405';
+
   const menuButton = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.primary-nav');
 
@@ -17,6 +20,77 @@
     });
   }
 
+  // Add a direct call option in the main navigation.
+  if (nav && !nav.querySelector('a[href^="tel:"]')) {
+    const quoteButton = nav.querySelector('a.button');
+    const callLink = document.createElement('a');
+    callLink.href = `tel:${PHONE_TEL}`;
+    callLink.textContent = 'Call';
+    nav.insertBefore(callLink, quoteButton || null);
+  }
+
+  // Keep the three pricing labels consistent everywhere.
+  const priceCards = document.querySelectorAll('.pricing-grid .price-card');
+  const pricing = [
+    ['Simple gutters', '$99'],
+    ['Most 2-story homes', '$129'],
+    ['Large / complex', '$149']
+  ];
+  priceCards.forEach((card, index) => {
+    if (!pricing[index]) return;
+    const [name, price] = pricing[index];
+    const nameNode = card.querySelector('.plan-name');
+    const priceNode = card.querySelector('.price');
+    if (nameNode) nameNode.textContent = name;
+    if (priceNode) priceNode.textContent = price;
+  });
+
+  // Add call/text buttons alongside the primary hero action.
+  const heroActions = document.querySelector('.hero-actions');
+  if (heroActions && !heroActions.querySelector('a[href^="tel:"]')) {
+    const call = document.createElement('a');
+    call.className = 'button button-ghost';
+    call.href = `tel:${PHONE_TEL}`;
+    call.textContent = `Call ${PHONE_DISPLAY}`;
+
+    const text = document.createElement('a');
+    text.className = 'button button-ghost';
+    text.href = `sms:${PHONE_TEL}`;
+    text.textContent = 'Text us';
+
+    heroActions.append(call, text);
+  }
+
+  // Add the phone number to the FAQ contact line and footer.
+  const faqContact = document.querySelector('.faq-heading p:last-of-type');
+  if (faqContact && !faqContact.textContent.includes(PHONE_DISPLAY)) {
+    faqContact.innerHTML = `Still have a question? Call or text <a href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a>, or email <a href="mailto:info@cleartechgutters.com">info@cleartechgutters.com</a>.`;
+  }
+
+  const contactHeading = [...document.querySelectorAll('.site-footer h3')].find((h) => h.textContent.trim() === 'Contact');
+  const contactColumn = contactHeading?.parentElement;
+  if (contactColumn && !contactColumn.querySelector('a[href^="tel:"]')) {
+    const firstLink = contactColumn.querySelector('a');
+    const call = document.createElement('a');
+    call.href = `tel:${PHONE_TEL}`;
+    call.textContent = `Call ${PHONE_DISPLAY}`;
+    const text = document.createElement('a');
+    text.href = `sms:${PHONE_TEL}`;
+    text.textContent = `Text ${PHONE_DISPLAY}`;
+    contactColumn.insertBefore(text, firstLink || null);
+    contactColumn.insertBefore(call, text);
+  }
+
+  // Update structured business data with the public phone number.
+  const jsonLd = document.querySelector('script[type="application/ld+json"]');
+  if (jsonLd) {
+    try {
+      const data = JSON.parse(jsonLd.textContent);
+      data.telephone = PHONE_DISPLAY;
+      data.priceRange = '$99-$149';
+      jsonLd.textContent = JSON.stringify(data);
+    } catch (_) {}
+  }
 
   document.querySelectorAll('.faq-item button').forEach((button) => {
     button.addEventListener('click', () => {
@@ -45,6 +119,55 @@
   const form = document.querySelector('#quote-form');
   const status = document.querySelector('#form-status');
 
+  if (form) {
+    // No photo upload and no separate home-height question are needed.
+    form.querySelector('[name="home_height"]')?.closest('label')?.remove();
+    form.querySelector('#upload-box')?.remove();
+    form.querySelector('#file-preview')?.remove();
+    form.querySelector('[name="photos"]')?.remove();
+
+    // Route requests directly to the ClearTech inbox without a paid form service.
+    form.action = 'https://formsubmit.co/ajax/info@cleartechgutters.com';
+    form.method = 'POST';
+    form.enctype = 'application/x-www-form-urlencoded';
+
+    let template = form.querySelector('input[name="_template"]');
+    if (!template) {
+      template = document.createElement('input');
+      template.type = 'hidden';
+      template.name = '_template';
+      template.value = 'table';
+      form.prepend(template);
+    }
+
+    // Replace any hidden service value with a simple three-category selector.
+    form.querySelector('[name="service_interest"]')?.closest('label')?.remove();
+    form.querySelector('input[name="service_interest"]')?.remove();
+
+    const detailsLabel = form.querySelector('textarea[name="details"]')?.closest('label');
+    const categoryLabel = document.createElement('label');
+    categoryLabel.textContent = 'Which category looks closest to your home?';
+    const category = document.createElement('select');
+    category.name = 'service_interest';
+    category.id = 'service-interest';
+    category.required = true;
+    [
+      ['', 'Select one'],
+      ['Simple gutters — $99', 'Simple gutters — $99'],
+      ['Most 2-story homes — $129', 'Most 2-story homes — $129'],
+      ['Large / complex — $149', 'Large / complex — $149'],
+      ['Not sure — review my address', 'Not sure — review my address']
+    ].forEach(([value, label]) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = label;
+      category.appendChild(option);
+    });
+    categoryLabel.appendChild(category);
+    if (detailsLabel) form.insertBefore(categoryLabel, detailsLabel);
+    else form.appendChild(categoryLabel);
+  }
+
   const showStatus = (message, type) => {
     if (!status) return;
     status.textContent = message;
@@ -71,12 +194,6 @@
 
     if (form.company_website?.value) return;
 
-    const endpoint = form.getAttribute('action') || '';
-    if (endpoint.includes('REPLACE_WITH_FORM_ID')) {
-      showStatus('The site design is ready, but the form endpoint still needs to be connected. See README.md for the one-line Formspree setup.', 'error');
-      return;
-    }
-
     const button = form.querySelector('button[type="submit"]');
     const originalLabel = button?.innerHTML;
     if (button) {
@@ -85,18 +202,17 @@
     }
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(form.action, {
         method: 'POST',
         body: new FormData(form),
         headers: { Accept: 'application/json' }
       });
 
       if (!response.ok) throw new Error('Submission failed');
-
       form.reset();
       showStatus('Thank you. Your quote request was sent successfully.', 'success');
     } catch (error) {
-      showStatus('The request could not be sent. Please try again or email info@cleartechgutters.com.', 'error');
+      showStatus(`The request could not be sent. Please call or text ${PHONE_DISPLAY}, or email info@cleartechgutters.com.`, 'error');
     } finally {
       if (button) {
         button.disabled = false;
