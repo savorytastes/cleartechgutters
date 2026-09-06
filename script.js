@@ -259,7 +259,7 @@
         }
 
         form.reset();
-        showStatus('Request sent. If this is the first submission, check info@cleartechgutters.com for the one-time FormSubmit activation email.', 'success');
+        showStatus('Thank you. Your quote request has been sent successfully.', 'success');
       } catch (error) {
         const timedOut = error?.name === 'AbortError';
         showStatus(
