@@ -1,6 +1,7 @@
 (() => {
   const PHONE_DISPLAY = '412-228-0405';
   const PHONE_TEL = '+14122280405';
+  const onHomepage = location.pathname === '/' || location.pathname.endsWith('/index.html');
 
   const menuButton = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.primary-nav');
@@ -20,12 +21,36 @@
     });
   }
 
+  if (nav && !nav.querySelector('a[href*="service-areas.html"]')) {
+    const quoteButton = nav.querySelector('a.button');
+    const areaLink = document.createElement('a');
+    areaLink.href = onHomepage ? 'service-areas.html' : '/service-areas.html';
+    areaLink.textContent = 'Service areas';
+    nav.insertBefore(areaLink, quoteButton || null);
+  }
+
   if (nav && !nav.querySelector('a[href^="tel:"]')) {
     const quoteButton = nav.querySelector('a.button');
     const callLink = document.createElement('a');
     callLink.href = `tel:${PHONE_TEL}`;
     callLink.textContent = 'Call';
     nav.insertBefore(callLink, quoteButton || null);
+  }
+
+  if (onHomepage) {
+    const eyebrow = document.querySelector('.hero-copy .eyebrow');
+    const heroHeading = document.querySelector('.hero-copy h1');
+    if (eyebrow) eyebrow.innerHTML = '<span class="eyebrow-dot"></span> Pittsburgh gutter cleaning';
+    if (heroHeading) heroHeading.innerHTML = 'Gutter cleaning in Pittsburgh.<br/><span>Cleaner gutters, better protection.</span>';
+
+    const areaCard = document.querySelector('.service-area .area-card > div:last-child');
+    if (areaCard && !areaCard.querySelector('a[href*="service-areas.html"]')) {
+      const areaPageLink = document.createElement('a');
+      areaPageLink.className = 'text-link text-link-light';
+      areaPageLink.href = 'service-areas.html';
+      areaPageLink.innerHTML = 'View our Pittsburgh service areas <span aria-hidden="true">→</span>';
+      areaCard.appendChild(areaPageLink);
+    }
   }
 
   const priceCards = document.querySelectorAll('.pricing-grid .price-card');
@@ -77,6 +102,15 @@
     contactColumn.insertBefore(call, text);
   }
 
+  const exploreHeading = [...document.querySelectorAll('.site-footer h3')].find((h) => h.textContent.trim() === 'Explore');
+  const exploreColumn = exploreHeading?.parentElement;
+  if (exploreColumn && !exploreColumn.querySelector('a[href*="service-areas.html"]')) {
+    const areaLink = document.createElement('a');
+    areaLink.href = onHomepage ? 'service-areas.html' : '/service-areas.html';
+    areaLink.textContent = 'Service areas';
+    exploreColumn.appendChild(areaLink);
+  }
+
   // SMS links open the phone's messaging app on mobile. On desktop, copy the
   // number instead of silently doing nothing when no SMS handler is installed.
   const textCapableDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
@@ -99,8 +133,18 @@
   if (jsonLd) {
     try {
       const data = JSON.parse(jsonLd.textContent);
-      data.telephone = PHONE_DISPLAY;
+      data.telephone = '+1-412-228-0405';
       data.priceRange = '$99-$149';
+      if (onHomepage) {
+        data.description = 'Ground-based gutter cleaning for suitable homes in Pittsburgh and nearby communities.';
+        data.areaServed = [
+          { '@type': 'City', name: 'Pittsburgh', addressRegion: 'PA' },
+          { '@type': 'City', name: 'Sharpsburg', addressRegion: 'PA' },
+          { '@type': 'City', name: 'Aspinwall', addressRegion: 'PA' },
+          { '@type': 'AdministrativeArea', name: "O'Hara Township", addressRegion: 'PA' },
+          { '@type': 'City', name: 'Fox Chapel', addressRegion: 'PA' }
+        ];
+      }
       jsonLd.textContent = JSON.stringify(data);
     } catch (_) {}
   }
