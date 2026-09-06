@@ -1,6 +1,7 @@
 (() => {
   const PHONE_DISPLAY = '412-228-0405';
   const PHONE_TEL = '+14122280405';
+  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/info@cleartechgutters.com';
   const onHomepage = location.pathname === '/' || location.pathname.endsWith('/index.html');
 
   const menuButton = document.querySelector('.menu-toggle');
@@ -12,7 +13,6 @@
       menuButton.setAttribute('aria-expanded', String(!open));
       nav.classList.toggle('open', !open);
     });
-
     nav.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
         nav.classList.remove('open');
@@ -53,13 +53,12 @@
     }
   }
 
-  const priceCards = document.querySelectorAll('.pricing-grid .price-card');
   const pricing = [
     ['Simple gutters', '$99'],
     ['Most 2-story homes', '$129'],
     ['Large / complex', '$149']
   ];
-  priceCards.forEach((card, index) => {
+  document.querySelectorAll('.pricing-grid .price-card').forEach((card, index) => {
     if (!pricing[index]) return;
     const [name, price] = pricing[index];
     const nameNode = card.querySelector('.plan-name');
@@ -79,7 +78,6 @@
     text.className = 'button button-ghost';
     text.href = `sms:${PHONE_TEL}`;
     text.textContent = `Text ${PHONE_DISPLAY}`;
-
     heroActions.append(call, text);
   }
 
@@ -113,7 +111,6 @@
 
   const textCapableDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
   document.querySelectorAll(`a[href="sms:${PHONE_TEL}"]`).forEach((link) => {
     if (textCapableDevice) return;
     link.addEventListener('click', async (event) => {
@@ -186,29 +183,9 @@
     form.querySelector('#file-preview')?.remove();
     form.querySelector('[name="photos"]')?.remove();
 
-    // Use a normal browser POST rather than AJAX. This is more reliable and
-    // allows FormSubmit's one-time email activation flow to work visibly.
-    form.action = 'https://formsubmit.co/info@cleartechgutters.com';
+    form.action = FORM_ENDPOINT;
     form.method = 'POST';
     form.removeAttribute('novalidate');
-
-    const hiddenFields = {
-      _template: 'table',
-      _subject: 'New ClearTech Gutters quote request',
-      _captcha: 'false',
-      _next: 'https://cleartechgutters.com/?quote=sent#quote'
-    };
-
-    Object.entries(hiddenFields).forEach(([name, value]) => {
-      let input = form.querySelector(`input[name="${name}"]`);
-      if (!input) {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        form.prepend(input);
-      }
-      input.value = value;
-    });
 
     form.querySelector('[name="service_interest"]')?.closest('label')?.remove();
     form.querySelector('input[name="service_interest"]')?.remove();
@@ -236,22 +213,69 @@
     if (detailsLabel) form.insertBefore(categoryLabel, detailsLabel);
     else form.appendChild(categoryLabel);
 
-    form.addEventListener('submit', (event) => {
-      if (form.company_website?.value) {
-        event.preventDefault();
-        return;
-      }
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status?.classList.remove('show', 'error', 'success');
+
+      if (form.company_website?.value) return;
       if (!form.checkValidity()) {
-        event.preventDefault();
         form.reportValidity();
         showStatus('Please complete the required fields before sending your request.', 'error');
+        return;
+      }
+
+      const button = form.querySelector('button[type="submit"]');
+      const originalLabel = button?.innerHTML;
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Sending…';
+      }
+      showStatus('Sending your request…', 'success');
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+      delete payload.company_website;
+      payload._subject = 'New ClearTech Gutters quote request';
+      payload._template = 'table';
+      payload._captcha = 'false';
+      payload._url = 'https://cleartechgutters.com/';
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
+
+      try {
+        const response = await fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || 'Submission failed');
+        }
+
+        form.reset();
+        showStatus('Request sent. If this is the first submission, check info@cleartechgutters.com for the one-time FormSubmit activation email.', 'success');
+      } catch (error) {
+        const timedOut = error?.name === 'AbortError';
+        showStatus(
+          timedOut
+            ? `The form service did not respond. Please call or text ${PHONE_DISPLAY} for now.`
+            : `The request could not be sent. Please call or text ${PHONE_DISPLAY}, or email info@cleartechgutters.com.`,
+          'error'
+        );
+      } finally {
+        clearTimeout(timer);
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = originalLabel;
+        }
       }
     });
-  }
-
-  if (new URLSearchParams(location.search).get('quote') === 'sent') {
-    showStatus('Thank you. Your quote request was sent successfully.', 'success');
-    history.replaceState({}, '', `${location.pathname}#quote`);
   }
 
   const year = document.querySelector('#year');
