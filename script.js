@@ -20,7 +20,6 @@
     });
   }
 
-  // Add a direct call option in the main navigation.
   if (nav && !nav.querySelector('a[href^="tel:"]')) {
     const quoteButton = nav.querySelector('a.button');
     const callLink = document.createElement('a');
@@ -29,7 +28,6 @@
     nav.insertBefore(callLink, quoteButton || null);
   }
 
-  // Keep the three pricing labels consistent everywhere.
   const priceCards = document.querySelectorAll('.pricing-grid .price-card');
   const pricing = [
     ['Simple gutters', '$99'],
@@ -45,7 +43,6 @@
     if (priceNode) priceNode.textContent = price;
   });
 
-  // Add call/text buttons alongside the primary hero action.
   const heroActions = document.querySelector('.hero-actions');
   if (heroActions && !heroActions.querySelector('a[href^="tel:"]')) {
     const call = document.createElement('a');
@@ -56,12 +53,11 @@
     const text = document.createElement('a');
     text.className = 'button button-ghost';
     text.href = `sms:${PHONE_TEL}`;
-    text.textContent = 'Text us';
+    text.textContent = `Text ${PHONE_DISPLAY}`;
 
     heroActions.append(call, text);
   }
 
-  // Add the phone number to the FAQ contact line and footer.
   const faqContact = document.querySelector('.faq-heading p:last-of-type');
   if (faqContact && !faqContact.textContent.includes(PHONE_DISPLAY)) {
     faqContact.innerHTML = `Still have a question? Call or text <a href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a>, or email <a href="mailto:info@cleartechgutters.com">info@cleartechgutters.com</a>.`;
@@ -81,7 +77,24 @@
     contactColumn.insertBefore(call, text);
   }
 
-  // Update structured business data with the public phone number.
+  // SMS links open the phone's messaging app on mobile. On desktop, copy the
+  // number instead of silently doing nothing when no SMS handler is installed.
+  const textCapableDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  document.querySelectorAll(`a[href="sms:${PHONE_TEL}"]`).forEach((link) => {
+    if (textCapableDevice) return;
+    link.addEventListener('click', async (event) => {
+      event.preventDefault();
+      try {
+        await navigator.clipboard.writeText(PHONE_DISPLAY);
+        window.alert(`Text ${PHONE_DISPLAY} from your phone. The number has been copied.`);
+      } catch (_) {
+        window.prompt('Text this number from your phone:', PHONE_DISPLAY);
+      }
+    });
+  });
+
   const jsonLd = document.querySelector('script[type="application/ld+json"]');
   if (jsonLd) {
     try {
@@ -120,13 +133,11 @@
   const status = document.querySelector('#form-status');
 
   if (form) {
-    // No photo upload and no separate home-height question are needed.
     form.querySelector('[name="home_height"]')?.closest('label')?.remove();
     form.querySelector('#upload-box')?.remove();
     form.querySelector('#file-preview')?.remove();
     form.querySelector('[name="photos"]')?.remove();
 
-    // Route requests directly to the ClearTech inbox without a paid form service.
     form.action = 'https://formsubmit.co/ajax/info@cleartechgutters.com';
     form.method = 'POST';
     form.enctype = 'application/x-www-form-urlencoded';
@@ -140,7 +151,6 @@
       form.prepend(template);
     }
 
-    // Replace any hidden service value with a simple three-category selector.
     form.querySelector('[name="service_interest"]')?.closest('label')?.remove();
     form.querySelector('input[name="service_interest"]')?.remove();
 
