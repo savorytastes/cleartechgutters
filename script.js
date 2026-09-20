@@ -173,8 +173,23 @@
 
   const showStatus = (message, type) => {
     if (!status) return;
+    const confirmed = type === 'success-confirmed';
     status.textContent = message;
-    status.className = `form-status show ${type}`;
+    status.className = `form-status show ${confirmed ? 'success' : type}`;
+    status.removeAttribute('style');
+
+    if (confirmed) {
+      status.style.fontSize = '1.15rem';
+      status.style.lineHeight = '1.5';
+      status.style.fontWeight = '800';
+      status.style.padding = '18px 20px';
+      status.style.border = '2px solid var(--teal)';
+      status.style.borderRadius = '14px';
+      status.style.background = '#eafff9';
+      status.style.color = 'var(--ink)';
+      status.style.boxShadow = '0 12px 30px rgba(7,27,43,.08)';
+      status.style.whiteSpace = 'pre-line';
+    }
   };
 
   if (form) {
@@ -259,7 +274,10 @@
         }
 
         form.reset();
-        showStatus('Thank you. Your quote request has been sent successfully.', 'success');
+        showStatus(
+          '✓ Quote request sent successfully.\nThank you — we received your request and will get back to you soon.',
+          'success-confirmed'
+        );
 
         if (typeof gtag === 'function') {
           gtag('event', 'generate_lead', {
