@@ -260,6 +260,12 @@
 
         form.reset();
         showStatus('Thank you. Your quote request has been sent successfully.', 'success');
+
+        if (typeof gtag === 'function') {
+          gtag('event', 'generate_lead', {
+            method: 'quote_form'
+          });
+        }
       } catch (error) {
         const timedOut = error?.name === 'AbortError';
         showStatus(
