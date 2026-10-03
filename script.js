@@ -38,11 +38,6 @@
   }
 
   if (onHomepage) {
-    const eyebrow = document.querySelector('.hero-copy .eyebrow');
-    const heroHeading = document.querySelector('.hero-copy h1');
-    if (eyebrow) eyebrow.innerHTML = '<span class="eyebrow-dot"></span> Pittsburgh gutter cleaning';
-    if (heroHeading) heroHeading.innerHTML = 'Gutter cleaning in Pittsburgh.<br/><span>Cleaner gutters, better protection.</span>';
-
     const areaCard = document.querySelector('.service-area .area-card > div:last-child');
     if (areaCard && !areaCard.querySelector('a[href*="service-areas.html"]')) {
       const areaPageLink = document.createElement('a');
@@ -123,26 +118,6 @@
       }
     });
   });
-
-  const jsonLd = document.querySelector('script[type="application/ld+json"]');
-  if (jsonLd) {
-    try {
-      const data = JSON.parse(jsonLd.textContent);
-      data.telephone = '+1-412-228-0405';
-      data.priceRange = '$99-$149';
-      if (onHomepage) {
-        data.description = 'Ground-based gutter cleaning for suitable homes in Pittsburgh and nearby communities.';
-        data.areaServed = [
-          { '@type': 'City', name: 'Pittsburgh', addressRegion: 'PA' },
-          { '@type': 'City', name: 'Sharpsburg', addressRegion: 'PA' },
-          { '@type': 'City', name: 'Aspinwall', addressRegion: 'PA' },
-          { '@type': 'AdministrativeArea', name: "O'Hara Township", addressRegion: 'PA' },
-          { '@type': 'City', name: 'Fox Chapel', addressRegion: 'PA' }
-        ];
-      }
-      jsonLd.textContent = JSON.stringify(data);
-    } catch (_) {}
-  }
 
   document.querySelectorAll('.faq-item button').forEach((button) => {
     button.addEventListener('click', () => {
