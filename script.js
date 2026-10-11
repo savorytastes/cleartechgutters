@@ -173,7 +173,6 @@
     form.querySelector('#file-preview')?.remove();
     form.querySelector('[name="photos"]')?.remove();
 
-    form.action = FORM_ENDPOINT;
     form.method = 'POST';
     form.removeAttribute('novalidate');
 
@@ -243,9 +242,9 @@
           signal: controller.signal
         });
 
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || data.success === false) {
-          throw new Error(data.message || 'Submission failed');
+        const data = await response.json();
+        if (!response.ok || (data?.success !== true && data?.success !== 'true')) {
+          throw new Error(data?.message || 'Submission failed');
         }
 
         form.reset();
