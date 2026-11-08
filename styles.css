@@ -306,3 +306,10 @@ input.invalid, select.invalid, textarea.invalid { border-color: #c84f4f; box-sha
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* Real service photos */
+.hero-job-photo { display: block; width: 100%; height: auto; border-radius: 23px; }
+.process-job-photo { margin: 28px 0 0; }
+.process-job-photo img { display: block; width: 100%; max-width: 420px; height: auto; border-radius: 20px; }
+.process-job-photo figcaption { margin-top: 12px; font-size: .875rem; color: var(--muted, #526672); }
+@media (max-width: 580px) { .visual-label { top: 25px; left: 25px; font-size: .6rem; letter-spacing: .05em; } }
